@@ -121,7 +121,7 @@ def load_data_en() -> pd.DataFrame:
 def _pt_augmentation_data() -> pd.DataFrame:
     """Exemplos nativos de spam/ham PT-BR para compensar limitações do dataset traduzido."""
     samples = [
-        # Golpes de prêmio
+        # --- Golpes de prêmio / sorteio ---
         ("spam", "VOCÊ GANHOU 5000 REAIS!!! APENAS PREENCHA ESSE FORMULÁRIO PARA SACAR"),
         ("spam", "PARABÉNS!!! Você foi sorteado e ganhou R$10.000! Clique para resgatar AGORA"),
         ("spam", "Você ganhou um iPhone 15! Só preencher o formulário em: link.xyz"),
@@ -129,30 +129,135 @@ def _pt_augmentation_data() -> pd.DataFrame:
         ("spam", "Parabéns! Vc ganhou um premio especial. Acesse agora antes que expire!!!"),
         ("spam", "VOCÊ FOI SORTEADO!!! Retire seu prêmio de R$3.500 pelo link abaixo"),
         ("spam", "Ganhou! Seu nome foi sorteado no nosso concurso. Saque em: bit.ly/xxx"),
-        # Golpes de banco / CPF
+        ("spam", "Você foi o vencedor do nosso sorteio semanal! Resgate seu prêmio agora"),
+        ("spam", "PRÊMIO ESPECIAL: Você foi pré-selecionado! Confirme seus dados para receber"),
+        ("spam", "Seu número foi sorteado! Ligue 0800-XXX para retirar R$8.000 em prêmios"),
+        # --- Golpes de banco / CPF / PIX ---
         ("spam", "Seu CPF foi SUSPENSO pela Receita Federal. Regularize AGORA: 0800-XXX-XXXX"),
         ("spam", "CONTA BLOQUEADA! Acesse urgente para desbloquear sua conta: link-falso.com"),
         ("spam", "ALERTA: Sua conta PIX foi suspensa. Clique aqui para reativar em 24h"),
         ("spam", "Caixa Econômica: Seu benefício de R$1.200 está disponível. Saque já: link"),
         ("spam", "URGENTE: Transação suspeita detectada. Confirme seus dados pelo link"),
         ("spam", "SEU CPF ESTÁ IRREGULAR! Acesse agora e regularize antes do bloqueio definitivo"),
-        # Golpes de crédito / empréstimo
+        ("spam", "BANCO DO BRASIL: Detectamos acesso não autorizado. Clique para verificar: link"),
+        ("spam", "Itaú: Seu token foi alterado. Confirme agora ou sua conta será bloqueada"),
+        ("spam", "Bradesco: Sua senha expira hoje. Atualize pelo link para não perder acesso"),
+        ("spam", "ALERTA PIX: Uma transferência de R$4.500 está pendente. Confirme seus dados"),
+        ("spam", "Nubank: Identificamos uma compra suspeita de R$890. Cancele em: nubank-seguro.xyz"),
+        ("spam", "Sua chave PIX está prestes a vencer. Renove agora para não perder: link"),
+        # --- Golpes de crédito / empréstimo ---
         ("spam", "Empréstimo de até R$50.000 APROVADO! Sem consulta ao SPC. Ligue já"),
         ("spam", "CRÉDITO PRÉ-APROVADO R$30.000! Taxa 0% nos primeiros 3 meses. Responda SIM"),
         ("spam", "Seu limite foi aumentado para R$15.000! Acesse agora e aproveite"),
         ("spam", "DINHEIRO RÁPIDO! Empréstimo de R$5.000 sem burocracia. Clique e contrate"),
-        # Golpes de renda / trabalho
+        ("spam", "Empréstimo pessoal APROVADO sem análise de crédito. R$20.000 em 24h"),
+        ("spam", "FGTS: Seu saldo disponível para saque é de R$3.200. Acesse: fgts-saque.com"),
+        ("spam", "Libere seu FGTS agora! Antecipe até R$10.000 sem juros. Clique aqui"),
+        # --- Golpes de renda / trabalho ---
         ("spam", "Vagas URGENTES! Ganhe até R$5000/mês trabalhando em casa. Cadastre-se: link"),
         ("spam", "Ganhe R$300 por dia trabalhando pelo celular. Sem experiência. ENTRE AGORA"),
         ("spam", "OPORTUNIDADE! Trabalhe de casa e ganhe R$2.000/semana. Acesse já"),
-        # Outros golpes comuns
+        ("spam", "Renda extra garantida! Ganhe R$500/dia apenas curtindo posts. Cadastre-se grátis"),
+        ("spam", "Trabalhe 2h por dia e ganhe R$8.000/mês. Vaga exclusiva disponível agora"),
+        ("spam", "VAGA ABERTA: Assistente virtual, home office, R$3.500/mês. Candidate-se já"),
+        # --- Golpes de investimento / criptomoeda ---
+        ("spam", "BITCOIN: Invista R$100 e receba R$1.000 em 7 dias. Método exclusivo!"),
+        ("spam", "Dobre seu dinheiro em 30 dias! Investimento seguro com retorno de 300%"),
+        ("spam", "Criptomoeda EXCLUSIVA vai explodir! Entre agora antes que suba 1000%"),
+        ("spam", "INVESTIMENTO GARANTIDO! R$500 viram R$5.000 em 2 semanas. Saiba como"),
+        ("spam", "Robô de investimento gera R$2.000/dia automaticamente. Acesse: investbot.xyz"),
+        ("spam", "Mercado financeiro: Retorno de 40% ao mês garantido. Invista agora"),
+        ("spam", "Forex: Aprenda a ganhar R$10.000/mês operando 1h por dia. Acesse grátis"),
+        # --- Golpes de encomenda / Correios ---
+        ("spam", "Correios: Sua encomenda está retida. Pague R$12,90 para liberar: correios-pkg.com"),
+        ("spam", "Seu pacote foi retido na alfândega. Clique para regularizar a entrega"),
+        ("spam", "SEDEX: Tentamos entregar seu pacote. Reagende pelo link: sedex-entrega.net"),
+        ("spam", "Atenção! Sua encomenda aguarda pagamento de taxa. Acesse: rastrear-pkg.xyz"),
+        ("spam", "iFood: Seu pedido foi cancelado. Clique para rever e receber reembolso"),
+        ("spam", "Amazon: Confirme seu endereço para liberar entrega retida: amazon-br.info"),
+        # --- Golpes de benefício governamental / INSS ---
+        ("spam", "INSS: Você tem R$2.400 de benefício não sacado. Resgate pelo link"),
+        ("spam", "Bolsa Família: Seu cadastro foi aprovado para R$600/mês. Confirme seus dados"),
+        ("spam", "AUXÍLIO DISPONÍVEL! Governo libera R$1.200 para trabalhadores. Cadastre-se"),
+        ("spam", "Seu benefício do INSS está bloqueado. Desbloqueie agora: inss-beneficio.com"),
+        ("spam", "Receita Federal: Restituição de R$3.100 disponível para saque. Acesse já"),
+        # --- Golpes de assinatura / streaming ---
+        ("spam", "Sua assinatura Netflix foi cancelada por falta de pagamento. Reative: netflix-br.xyz"),
+        ("spam", "ATENÇÃO Spotify: Seu plano expira em 24h. Atualize seu cartão pelo link"),
+        ("spam", "Amazon Prime: Cobrança recusada. Atualize dados para manter acesso"),
+        ("spam", "CANCELAMENTO: Sua assinatura será encerrada. Clique para manter ativo"),
+        # --- Golpe do WhatsApp clonado / familiar em apuros ---
+        ("spam", "Oi mãe, troquei de número! Pode me mandar um Pix de R$500? Tô com problema urgente"),
+        ("spam", "Oi sou eu, comprei celular novo. Salva esse número. Me manda R$300 via Pix agora"),
+        ("spam", "Olá! Mudei de número, o antigo foi bloqueado. Preciso de ajuda, pode me transferir?"),
+        ("spam", "Mãe esse é meu número novo. Tenho uma conta vencendo hoje, você me ajuda?"),
+        ("spam", "Oi sumido, número novo aqui! Me faz um Pix de R$200 que te devolvo amanhã"),
+        ("spam", "Pai, mudei de operadora. Novo número. Tô numa emergência, pode me ajudar?"),
+        # --- Malware via arquivo / golpe do comprovante ---
+        ("spam", "Segue comprovante de pagamento conforme combinado. Abra o arquivo: comprovante.apk"),
+        ("spam", "Orçamento solicitado em anexo. Acesse para visualizar: orcamento_final.zip"),
+        ("spam", "Sua nota fiscal eletrônica está disponível. Baixe agora: nota-fiscal-nfe.xyz"),
+        ("spam", "Você aparece neste vídeo! Veja antes que apaguem: bit.ly/video-flagrado"),
+        ("spam", "Currículo recebido! Próxima etapa do processo seletivo: acesse o link"),
+        ("spam", "Imagens do acidente registradas. Você estava presente? Confira: link"),
+        # --- Golpe do DETRAN / multa de trânsito ---
+        ("spam", "DETRAN: Sua CNH está suspensa. Regularize antes do vencimento: detran-online.xyz"),
+        ("spam", "Multa registrada no seu veículo placa XXX. Pague com desconto: multa-facil.com"),
+        ("spam", "SENATRAN: Seu veículo possui 3 infrações em aberto. Recorra online: link"),
+        ("spam", "Alerta: Sua CNH vence em 30 dias. Renove agora para evitar multas: cnh-renovacao.net"),
+        ("spam", "Seu veículo tem débitos de IPVA em aberto. Regularize em: ipva-debitos.xyz"),
+        # --- Golpe do plano de saúde / seguro ---
+        ("spam", "Seu plano de saúde foi cancelado por inadimplência. Reative: plano-saude-br.xyz"),
+        ("spam", "OFERTA EXCLUSIVA: Plano de saúde a partir de R$49/mês sem carência. Ligue já"),
+        ("spam", "Seguro de vida GRATUITO! Você foi pré-aprovado. Confirme seus dados agora"),
+        ("spam", "Plano odontológico completo por R$29/mês! Sem carência. Cadastre-se: link"),
+        # --- Golpe do consórcio contemplado ---
+        ("spam", "PARABÉNS! Seu consórcio foi CONTEMPLADO! Retire sua carta de crédito: consorcio-br.com"),
+        ("spam", "Consórcio de imóvel contemplado! Sua carta de R$200.000 está disponível"),
+        ("spam", "Você foi contemplado no sorteio do consórcio! Fale com nosso consultor agora"),
+        # --- Golpe da Dívida Ativa / cobrança judicial ---
+        ("spam", "PGFN: Seu CPF consta na Dívida Ativa da União. Negocie agora: divida-ativa.xyz"),
+        ("spam", "Notificação extrajudicial: Você possui uma ação em seu nome. Consulte: processo-online.xyz"),
+        ("spam", "Dívida Ativa: Regularize seu CPF antes do protesto em cartório. Acesse: link"),
+        # --- Vishing (mensagem pré-ligação falsa) ---
+        ("spam", "Em instantes você receberá uma ligação do nosso banco. Não desligue, é urgente"),
+        ("spam", "Central de Segurança Bradesco: Ligaremos em 5 minutos sobre ocorrência na sua conta"),
+        ("spam", "Um atendente entrará em contato agora. Caso não atenda, seu cartão será bloqueado"),
+        ("spam", "Banco do Brasil: Detectamos transação incomum. Aguarde nossa ligação nos próximos 2 min"),
+        # --- Spam de produto de saúde / emagrecimento ---
+        ("spam", "Emagreça 15kg em 30 dias sem dieta! Produto com registro ANVISA: compre aqui"),
+        ("spam", "Remédio NATURAL que médicos não querem que você saiba! 70% de desconto hoje"),
+        ("spam", "Cure diabetes em 7 dias! Tratamento natural exclusivo aprovado. Acesse: saude-natural.xyz"),
+        ("spam", "Cabelo crescendo em 30 dias! Tratamento capilar milagroso: peça já com desconto"),
+        # --- Golpe do concurso público falso ---
+        ("spam", "CONCURSO PÚBLICO ABERTO! 500 vagas, salário até R$8.000. Inscreva-se: concurso-2025.xyz"),
+        ("spam", "Edital publicado! Vagas no governo federal. Não perca o prazo: inscricao-gov.net"),
+        # --- Apostas / cassino ---
+        ("spam", "Ganhe dinheiro apostando! Bônus de R$500 para novos cadastros. Entre agora"),
+        ("spam", "CASSINO ONLINE: Primeiro depósito com 200% de bônus. Cadastre-se grátis"),
+        ("spam", "Aposta esportiva: Dica 100% garantida para hoje. Acesse: tipster-vip.com"),
+        ("spam", "Jogue e ganhe! R$50 grátis sem depósito. Oferta por tempo limitado"),
+        # --- Fatura / boleto falso ---
+        ("spam", "Sua fatura vence HOJE! Evite juros e pague pelo link: fatura-online.xyz"),
+        ("spam", "BOLETO ATUALIZADO: Pague R$149,90 pelo novo link ou seu serviço será cortado"),
+        ("spam", "Cobrança pendente no seu CPF. Regularize agora para evitar negativação"),
+        ("spam", "Débito automático cancelado. Pague sua fatura atualizada: link-pagamento.com"),
+        # --- Correntes / desinformação WhatsApp ---
+        ("spam", "ATENÇÃO: O WhatsApp vai cobrar amanhã. Encaminhe para 10 amigos para manter grátis"),
+        ("spam", "Encaminhe essa mensagem para 20 contatos ou sua conta será desativada amanhã"),
+        ("spam", "URGENTE: Vacina obrigatória anunciada. Compartilhe antes que censurem essa notícia"),
+        ("spam", "Governo vai BLOQUEAR seu WhatsApp! Encaminhe agora para 15 pessoas para evitar"),
+        # --- Phishing genérico / outros ---
         ("spam", "Emagreça 10kg em 15 dias! Produto MILAGROSO com 70% OFF. Peça já"),
         ("spam", "ÚLTIMA CHANCE!!! Promoção relâmpago acaba em 1h. Garanta pelo link: bit.ly/xxx"),
         ("spam", "Você tem uma mensagem não lida! Clique para ver: http://mensagem-secreta.xyz"),
-        ("spam", "ATENÇÃO: O WhatsApp vai cobrar amanhã. Encaminhe para 10 amigos para manter grátis"),
         ("spam", "Notícia URGENTE sobre você! Veja antes que seja removido: link suspeito"),
         ("spam", "PROMOÇÃO IMPERDÍVEL!!! Só hoje, 80% de desconto. Compre agora: link"),
-        # Ham nativo PT-BR
+        ("spam", "Você foi selecionado para testar nosso produto GRÁTIS. Só pagar o frete"),
+        ("spam", "Seu ex ainda pensa em você. Veja o que ele postou: perfil-secreto.com"),
+        ("spam", "ALERTA DE SEGURANÇA: Sua conta foi acessada de outro dispositivo. Confirme já"),
+        ("spam", "Clique aqui para ver quem visualizou seu perfil hoje: rastreador-perfil.xyz"),
+        # --- Ham nativo PT-BR ---
         ("ham", "Oi, tudo bem? Que horas você chega em casa hoje?"),
         ("ham", "Bom dia! A reunião de amanhã foi cancelada, ok?"),
         ("ham", "Pode me mandar o endereço do restaurante? Vou chegar às 19h"),
@@ -165,6 +270,14 @@ def _pt_augmentation_data() -> pd.DataFrame:
         ("ham", "Boa noite! Conseguiu resolver o problema do computador?"),
         ("ham", "Vou chegar uns 10 minutos atrasado, pode esperar?"),
         ("ham", "Não se esqueça da festa da empresa na sexta"),
+        ("ham", "Mãe, chegou minha encomenda aí? Rastreio diz que foi entregue hoje"),
+        ("ham", "Passando pra avisar que o banco ligou confirmando o cartão novo"),
+        ("ham", "Tá precisando de ajuda com o trabalho? Posso dar uma olhada depois"),
+        ("ham", "Qual o número do seu pix? Vou te pagar o almoço de ontem"),
+        ("ham", "Recebi a fatura do cartão, vou pagar amanhã. Tudo certo"),
+        ("ham", "Lembrei que preciso renovar minha CNH esse mês, tá avisado"),
+        ("ham", "O professor cancelou a aula de hoje. Remanejou para quinta"),
+        ("ham", "Bom trabalho! Seu relatório ficou muito bom, parabéns"),
     ]
     rows = [
         {"text": text, "label": label, "label_num": 1 if label == "spam" else 0}
@@ -358,15 +471,64 @@ _PT_CHARS = set("ãõçâêôàáéíóú")  # caracteres exclusivos/comuns do p
 
 # Palavras-chave típicas de spam PT-BR (normalizadas, sem acentos)
 _PT_SPAM_KEYWORDS = frozenset({
-    "ganhou", "ganhe", "premio", "sorteado", "sorteio",
-    "sacar", "saque", "resgate", "resgatar", "beneficio",
-    "formulario", "aprovado", "preaprovado", "cadastre",
-    "cpf", "bloqueado", "suspenso", "desbloqueie",
-    "urgente", "urgencia", "encaminhe", "clique aqui",
-    "acesse agora", "responda sim", "gratis", "gratuito",
-    "promocao", "desconto", "emprestimo", "credito",
-    "sem consulta", "taxa zero", "ganhe dinheiro",
-    "trabalhando em casa", "reais", "preencha",
+    # Prêmio / sorteio
+    "ganhou", "ganhe", "premio", "sorteado", "sorteio", "vencedor",
+    "pre-selecionado", "contemplado", "resgate", "resgatar",
+    # Financeiro / banco / CPF
+    "sacar", "saque", "beneficio", "cpf", "bloqueado", "suspenso",
+    "desbloqueie", "transacao", "pix", "token", "senha expira",
+    "acesso nao autorizado", "compra suspeita", "chave pix",
+    # Crédito / empréstimo / FGTS
+    "aprovado", "preaprovado", "emprestimo", "credito",
+    "sem consulta", "taxa zero", "fgts", "antecipe",
+    "limite aumentado", "sem burocracia",
+    # Trabalho / renda
+    "trabalhando em casa", "home office", "renda extra",
+    "ganhe dinheiro", "ganhe reais", "trabalhe de casa",
+    # Investimento / crypto
+    "investimento", "bitcoin", "criptomoeda", "dobrar",
+    "retorno garantido", "robo de investimento", "forex",
+    # Encomenda / entrega
+    "encomenda", "retida", "sedex", "rastreio", "alfandega",
+    "taxa de entrega", "aguarda pagamento",
+    # Governo / benefício
+    "inss", "bolsa familia", "auxilio", "restituicao",
+    "receita federal", "beneficio nao sacado",
+    # Assinatura / streaming
+    "assinatura", "plano expira", "cobranca recusada",
+    # Apostas / cassino
+    "apostas", "cassino", "bonus de cadastro", "deposito",
+    # Outros golpes
+    "formulario", "cadastre", "urgente", "encaminhe",
+    "clique aqui", "acesse agora", "responda sim",
+    "gratis", "gratuito", "promocao", "desconto",
+    "preencha", "reais", "milagroso", "100% garantido",
+    "fatura", "boleto", "negativacao", "cobranca",
+    "invista", "confirme", "receba", "exclusivo",
+    "dobre", "duplique", "multiplique", "retorno",
+    # Golpe do WhatsApp clonado / familiar em apuros
+    "troquei de numero", "numero novo", "celular novo",
+    "mudei de numero", "numero foi bloqueado",
+    # Malware via arquivo
+    ".apk", "comprovante.apk", "orcamento", "nota fiscal",
+    "processo seletivo",
+    # DETRAN / trânsito
+    "detran", "cnh", "senatran", "infracoes em aberto",
+    "debitos de ipva",
+    # Plano de saúde / seguro
+    "plano de saude", "plano odontologico", "seguro de vida",
+    "sem carencia",
+    # Consórcio
+    "consorcio", "contemplado", "carta de credito",
+    # Dívida Ativa / cobrança judicial
+    "divida ativa", "pgfn", "acao em seu nome",
+    "protesto em cartorio", "notificacao extrajudicial",
+    # Vishing
+    "aguarde nossa ligacao", "ligaremos em", "nao desligue",
+    # Saúde / emagrecimento
+    "anvisa", "sem dieta", "cure diabetes", "tratamento natural",
+    # Concurso público falso
+    "concurso publico", "vagas no governo",
 })
 
 
@@ -388,13 +550,19 @@ def _heuristic_spam_pt(text: str) -> bool:
     letters = [c for c in text if c.isalpha()]
     caps_ratio = sum(1 for c in letters if c.isupper()) / max(len(letters), 1)
     excl_count = text.count("!")
-    has_link = bool(re.search(r"http|bit\.ly|www\.|\.com|\.xyz|link", normalized))
+    has_link = bool(re.search(r"http|bit\.ly|www\.|\.com|\.xyz|link|0800|acesse|regularize", normalized))
 
+    # 3+ keywords sozinhos já são sinal forte de spam
+    if keyword_hits >= 3:
+        return True
     # 2+ keywords + (caixa alta excessiva OU muitas exclamações OU link suspeito)
     if keyword_hits >= 2 and (caps_ratio > 0.4 or excl_count >= 2 or has_link):
         return True
     # Caixa alta muito alta + qualquer keyword de spam
     if caps_ratio > 0.6 and keyword_hits >= 1:
+        return True
+    # Link suspeito + qualquer keyword (phishing típico)
+    if has_link and keyword_hits >= 1:
         return True
     return False
 
@@ -516,8 +684,8 @@ def run():
         print(f"  [{label}][{lang_tag}] {r['text'][:65]}{'...' if len(r['text']) > 65 else ''}")
 
     print("\n[done] Treinamento concluído. Modelos salvos na pasta 'models/'.")
-    print("        EN → models/model_en.joblib")
-    print("        PT → models/model_pt.joblib")
+    print("        EN -> models/model_en.joblib")
+    print("        PT -> models/model_pt.joblib")
 
 
 if __name__ == "__main__":
