@@ -1,0 +1,8 @@
+services:
+  spam-classifier:
+    build: .
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./models:/app/models
+      - ./plots:/app/plots
