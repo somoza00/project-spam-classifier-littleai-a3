@@ -237,6 +237,24 @@ def _pt_augmentation_data() -> pd.DataFrame:
         ("spam", "CASSINO ONLINE: Primeiro depósito com 200% de bônus. Cadastre-se grátis"),
         ("spam", "Aposta esportiva: Dica 100% garantida para hoje. Acesse: tipster-vip.com"),
         ("spam", "Jogue e ganhe! R$50 grátis sem depósito. Oferta por tempo limitado"),
+        # --- MLM / pirâmide / indicação ---
+        ("spam", "Empresa de marketing busca representantes. Ganhos ilimitados. Trabalhe de casa"),
+        ("spam", "Seja um revendedor e ganhe comissões incríveis. Sem investimento inicial"),
+        ("spam", "Você foi indicado por um amigo para nossa oportunidade de negócio exclusiva"),
+        ("spam", "Torne-se um afiliado e ganhe comissão em cada venda. Renda passiva real"),
+        ("spam", "Marketing multinível: ganhe R$500 por dia indicando pessoas. Grátis para começar"),
+        ("spam", "Indique amigos e ganhe bônus! Renda extra garantida sem sair de casa"),
+        ("spam", "Oportunidade de negócio: sem experiência, sem investimento, ganhos ilimitados"),
+        ("spam", "Seja representante da nossa empresa. Trabalhe em casa, ganhe comissão"),
+        # --- Benefício genérico / governo falso ---
+        ("spam", "Olá! Seu nome foi indicado para receber um benefício exclusivo do governo"),
+        ("spam", "Você foi selecionado para receber um benefício especial. Confirme seus dados"),
+        ("spam", "Benefício disponível no seu CPF. Acesse agora antes que expire"),
+        # --- Curso / guru digital ---
+        ("spam", "Curso online GRATUITO: aprenda a ganhar R$10.000 por mês na internet"),
+        ("spam", "Método secreto para viver de renda. Acesso por tempo limitado. Clique aqui"),
+        ("spam", "Ganhe dinheiro com o Pix Automático. Sistema 100% automatizado"),
+        ("spam", "Aprenda a trabalhar de casa e ganhar R$5.000/mês. Vaga exclusiva"),
         # --- Fatura / boleto falso ---
         ("spam", "Sua fatura vence HOJE! Evite juros e pague pelo link: fatura-online.xyz"),
         ("spam", "BOLETO ATUALIZADO: Pague R$149,90 pelo novo link ou seu serviço será cortado"),
@@ -470,6 +488,14 @@ def load_model(lang: str = "en"):
 _PT_CHARS = set("ãõçâêôàáéíóú")  # caracteres exclusivos/comuns do português, ausentes no inglês
 
 # Palavras-chave típicas de spam PT-BR (normalizadas, sem acentos)
+# Frases inequivocamente associadas a spam — disparam sozinhas, sem sinais estruturais
+_PT_SPAM_PHRASES = frozenset({
+    "oportunidade de negocio", "ganhos ilimitados", "sem investimento inicial",
+    "pix automatico", "metodo secreto", "viver de renda", "ganhar na internet",
+    "renda passiva garantida", "sistema automatizado", "trabalhe em casa e ganhe",
+    "indicado para receber um beneficio",
+})
+
 _PT_SPAM_KEYWORDS = frozenset({
     # Prêmio / sorteio
     "ganhou", "ganhe", "premio", "sorteado", "sorteio", "vencedor",
@@ -529,6 +555,15 @@ _PT_SPAM_KEYWORDS = frozenset({
     "anvisa", "sem dieta", "cure diabetes", "tratamento natural",
     # Concurso público falso
     "concurso publico", "vagas no governo",
+    # MLM / pirâmide / indicação
+    "indicado", "oportunidade de negocio", "representantes", "ganhos ilimitados",
+    "seja um revendedor", "comissao", "renda passiva", "afiliado", "multinivel",
+    "sem investimento inicial", "indica um amigo", "indique e ganhe",
+    # Benefício genérico sem contexto
+    "beneficio exclusivo", "beneficio especial", "beneficio disponivel",
+    # Cursos / guru digital
+    "curso online", "metodo secreto", "viver de renda", "ganhar na internet",
+    "renda de casa", "pix automatico",
 })
 
 
@@ -545,6 +580,10 @@ def _heuristic_spam_pt(text: str) -> bool:
     do dataset de treino (tradução automática do inglês).
     """
     normalized = _normalize_pt(text)
+
+    if any(phrase in normalized for phrase in _PT_SPAM_PHRASES):
+        return True
+
     keyword_hits = sum(1 for kw in _PT_SPAM_KEYWORDS if kw in normalized)
 
     letters = [c for c in text if c.isalpha()]
@@ -563,6 +602,51 @@ def _heuristic_spam_pt(text: str) -> bool:
         return True
     # Link suspeito + qualquer keyword (phishing típico)
     if has_link and keyword_hits >= 1:
+        return True
+    return False
+
+
+_EN_SPAM_KEYWORDS = frozenset({
+    # IRS / tax / government scams
+    "owe taxes", "unpaid taxes", "irs notice", "irs", "avoid arrest", "face arrest",
+    "social security suspended", "social security number has been", "final warning",
+    "immediate action required", "immediate action",
+    # Phishing / account compromise
+    "account has been compromised", "account compromised", "verify your identity",
+    "suspicious activity", "update your payment", "update payment",
+    "subscription has expired", "subscription expired", "payment method",
+    "confirm your details", "verify your account", "click to verify",
+    # Work from home / income scams
+    "working from home", "work from home", "guaranteed income",
+    "no experience needed", "earn money", "make money online",
+    "from your phone", "daily income", "sign up free",
+    # Package / delivery scams
+    "pending package", "delivery fee", "parcel", "customs fee",
+    # Prize / lottery scams
+    "won our", "you have won", "claim your prize", "claim prize",
+    "selected for a free", "giveaway",
+    # Generic phishing urgency
+    "account will be suspended", "account will be closed", "limited time",
+    "act now", "expires soon",
+})
+
+
+def _heuristic_spam_en(text: str) -> bool:
+    normalized = text.lower()
+    keyword_hits = sum(1 for kw in _EN_SPAM_KEYWORDS if kw in normalized)
+
+    has_suspicious_link = bool(re.search(
+        r"\.xyz|\.net/[a-z]|secure-[a-z]|[a-z]+-verify|[a-z]+-update|[a-z]+-claim|[a-z]+-track",
+        normalized,
+    ))
+    has_urgency = bool(re.search(
+        r"final warning|immediate|urgent|act now|expires|suspended|arrested|action required",
+        normalized,
+    ))
+
+    if keyword_hits >= 2:
+        return True
+    if keyword_hits >= 1 and (has_suspicious_link or has_urgency):
         return True
     return False
 
@@ -596,6 +680,8 @@ def predict_auto(texts: list[str]) -> list[dict]:
         pred = pipeline.predict([processed])[0]
 
         if lang == "pt" and pred != 1 and _heuristic_spam_pt(text):
+            pred = 1
+        if lang == "en" and pred != 1 and _heuristic_spam_en(text):
             pred = 1
 
         results.append({
